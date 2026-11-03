@@ -47,18 +47,19 @@
         .error-msg {color:var(--danger);font-size:13px;margin-bottom:10px;display:none;}
 
         /* Admin Panel */
-        .admin-panel {position:fixed;top:0;right:0;width:380px;max-width:100%;height:100vh;background:white;box-shadow:-4px 0 20px rgba(0,0,0,.12);z-index:250;transform:translateX(100%);transition:.3s;overflow-y:auto;}
+        .admin-panel {position:fixed;top:0;right:0;width:420px;max-width:100%;height:100vh;background:white;box-shadow:-4px 0 20px rgba(0,0,0,.12);z-index:250;transform:translateX(100%);transition:.3s;overflow-y:auto;}
         .admin-panel.open {transform:translateX(0);}
-        .admin-header {background:var(--primary);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;}
+        .admin-header {background:var(--primary);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1;}
         .close-btn {background:none;border:none;color:white;font-size:24px;cursor:pointer;}
         .admin-content {padding:20px;}
-        .tabs {display:flex;border-bottom:1px solid #eee;margin-bottom:20px;}
-        .tab {padding:10px 14px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;}
+        .tabs {display:flex;border-bottom:1px solid #eee;margin-bottom:20px;overflow-x:auto;}
+        .tab {padding:10px 12px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
         .tab.active {border-bottom-color:var(--primary);color:var(--primary);font-weight:500;}
         .tab-content {display:none;}
         .tab-content.active {display:block;}
         label {display:block;font-size:13px;color:var(--text-light);margin:10px 0 4px;}
         input,select,textarea {width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;}
+        textarea {min-height:110px;resize:vertical;font-family:monospace;font-size:12px;}
         .btn-block {width:100%;padding:12px;margin-top:10px;}
         .success {background:#e8f5e9;color:#2e7d32;padding:10px;border-radius:6px;margin-top:12px;display:none;}
         .success.show {display:block;}
@@ -69,6 +70,7 @@
         .form-section {background:white;border-radius:12px;padding:24px;margin-top:24px;}
         .form-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
         .btn-whatsapp {background:#25d366;color:white;font-size:16px;margin-top:16px;}
+        .help-text {font-size:12px;color:var(--text-light);margin-top:5px;}
         footer {text-align:center;padding:24px;color:var(--text-light);font-size:13px;margin-top:40px;}
         @media (max-width:600px) {.grid{grid-template-columns:1fr;}.admin-panel{width:100%;}}
     </style>
@@ -79,7 +81,7 @@
 <div id="adminLoginModal" class="modal-overlay">
     <div class="modal">
         <h3>🔐 Accès Administrateur</h3>
-        <p>Entrez le mot de passe pour gérer les prix</p>
+        <p>Entrez le mot de passe pour gérer le site</p>
         <input type="password" id="adminPassword" placeholder="Mot de passe">
         <div id="loginError" class="error-msg">❌ Mot de passe incorrect</div>
         <div class="modal-buttons">
@@ -93,24 +95,59 @@
 <div id="adminPanel" class="admin-panel">
     <div class="admin-header">
         <h3>⚙️ Badili</h3>
-        <button class="close-btn" onclick="closeAdminPanel()">×</button>
+        <button class="close-btn" onclick="closeAdminPanel()" aria-label="Fermer">×</button>
     </div>
     <div class="admin-content">
         <div class="tabs">
             <span class="tab active" data-tab="general">Général</span>
+            <span class="tab" data-tab="content">Contenus</span>
             <span class="tab" data-tab="backup">Sauvegarde</span>
         </div>
 
         <div class="tab-content active" id="tab-general">
             <h4 style="color:var(--primary);margin:16px 0 8px;">💱 Taux</h4>
-            <label>Taux Achat (BIF)</label>
+            <label for="rateBuy">Taux Achat (BIF)</label>
             <input type="number" id="rateBuy">
-            <label>Taux Vente (BIF)</label>
+            <label for="rateSell">Taux Vente (BIF)</label>
             <input type="number" id="rateSell">
-            <label>WhatsApp (+257)</label>
+            <label for="whatsappNum">WhatsApp (+257)</label>
             <input type="text" id="whatsappNum">
             <button class="btn btn-primary btn-block" onclick="saveSettings()">💾 Sauvegarder</button>
             <div id="saveSuccess" class="success">✓ Sauvegardé</div>
+        </div>
+
+        <div class="tab-content" id="tab-content">
+            <h4 style="color:var(--primary);margin:16px 0 8px;">✏️ Modifier le site</h4>
+            <p class="help-text">Modifiez ici les textes affichés sur la page, les titres et les prix référencés.</p>
+            <label for="contentBrandInitial">Lettre du logo</label><input id="contentBrandInitial" data-content="brandInitial">
+            <label for="contentBrandName">Nom de la marque</label><input id="contentBrandName" data-content="brandName">
+            <label for="contentBrandUrl">Nom affiché sous la marque</label><input id="contentBrandUrl" data-content="brandUrl">
+            <label for="contentRateTitle">Titre de la carte des taux</label><input id="contentRateTitle" data-content="rateTitle">
+            <label for="contentIndexTitle">Titre de la carte indice</label><input id="contentIndexTitle" data-content="indexTitle">
+            <label for="contentIndexValue">Valeur de l'indice</label><input id="contentIndexValue" data-content="indexValue">
+            <label for="contentIndexTrend">Texte de tendance</label><input id="contentIndexTrend" data-content="indexTrend">
+            <label for="contentMarketsTitle">Titre de la carte marchés</label><input id="contentMarketsTitle" data-content="marketsTitle">
+            <label for="contentMarketsValue">Nombre affiché de marchés</label><input id="contentMarketsValue" data-content="marketsValue">
+            <label for="contentMarketsSubtitle">Sous-titre des marchés</label><input id="contentMarketsSubtitle" data-content="marketsSubtitle">
+            <label for="contentPricesTitle">Titre des prix référencés</label><input id="contentPricesTitle" data-content="pricesTitle">
+            <label for="contentProductHeading">En-tête colonne produit</label><input id="contentProductHeading" data-content="productHeading">
+            <label for="contentMarketHeading">En-tête colonne marché</label><input id="contentMarketHeading" data-content="marketHeading">
+            <label for="contentPriceHeading">En-tête colonne prix</label><input id="contentPriceHeading" data-content="priceHeading">
+            <label for="contentSellerHeading">En-tête colonne vendeur</label><input id="contentSellerHeading" data-content="sellerHeading">
+            <label for="contentProposalTitle">Titre du formulaire de proposition</label><input id="contentProposalTitle" data-content="proposalTitle">
+            <label for="contentProductLabel">Libellé du champ produit</label><input id="contentProductLabel" data-content="productLabel">
+            <label for="contentMarketLabel">Libellé du champ marché</label><input id="contentMarketLabel" data-content="marketLabel">
+            <label for="contentPriceLabel">Libellé du champ prix</label><input id="contentPriceLabel" data-content="priceLabel">
+            <label for="contentSellerLabel">Libellé du champ vendeur</label><input id="contentSellerLabel" data-content="sellerLabel">
+            <label for="contentSubmitLabel">Texte du bouton WhatsApp</label><input id="contentSubmitLabel" data-content="submitLabel">
+            <label for="contentProposalNote">Note sous le formulaire</label><input id="contentProposalNote" data-content="proposalNote">
+            <label for="contentFooter">Pied de page</label><input id="contentFooter" data-content="footer">
+            <label for="contentRows">Prix référencés (format JSON)</label>
+            <textarea id="contentRows" spellcheck="false" aria-describedby="contentRowsHelp"></textarea>
+            <p id="contentRowsHelp" class="help-text">Format requis : tableau d'objets avec « product », « market », « price » et « seller ». Exemple : [{"product":"Riz 1kg","market":"Centre","price":"4800","seller":"—"}]</p>
+            <button class="btn btn-primary btn-block" onclick="saveContent()">💾 Enregistrer les contenus</button>
+            <div id="contentSuccess" class="success" role="status">✓ Contenus enregistrés</div>
+            <div id="contentError" class="error-msg" role="alert"></div>
         </div>
 
         <div class="tab-content" id="tab-backup">
@@ -125,111 +162,128 @@
 <!-- HEADER -->
 <header>
     <div class="header-left">
-        <div class="logo-mark">S</div>
+        <div class="logo-mark" id="brandInitial">S</div>
         <div class="logo-text">
-            <h1>SOKO</h1>
-            <p>SOKO.bi</p>
+            <h1 id="brandName">SOKO</h1>
+            <p id="brandUrl">SOKO.bi</p>
         </div>
     </div>
-    <div>
-        <button id="adminLoginBtn" class="btn btn-admin" onclick="openLoginModal()">⚙️ Badili</button>
-    </div>
+    <div><button id="adminLoginBtn" class="btn btn-admin" onclick="openLoginModal()">⚙️ Badili</button></div>
 </header>
 
 <!-- CONTENU PRINCIPAL -->
 <div class="container">
     <div class="grid">
         <div class="card">
-            <div class="card-title">USD / BIF</div>
+            <div class="card-title" id="rateTitle">USD / BIF</div>
             <div class="card-value" id="displayRate">2,980 BIF</div>
             <div class="card-sub">Achat <span id="rBuy">2,980</span> / Vente <span id="rSell">2,990</span></div>
         </div>
         <div class="card">
-            <div class="card-title">Indice Prix</div>
-            <div class="card-value">108.4</div>
-            <div class="trend up">+1.2% vs semaine dernière</div>
+            <div class="card-title" id="indexTitle">Indice Prix</div>
+            <div class="card-value" id="indexValue">108.4</div>
+            <div class="trend up" id="indexTrend">+1.2% vs semaine dernière</div>
         </div>
         <div class="card">
-            <div class="card-title">Marchés</div>
-            <div class="card-value">8</div>
-            <div class="card-sub">Bujumbura • Actif</div>
+            <div class="card-title" id="marketsTitle">Marchés</div>
+            <div class="card-value" id="marketsValue">8</div>
+            <div class="card-sub" id="marketsSubtitle">Bujumbura • Actif</div>
         </div>
     </div>
 
     <div class="card">
-        <h3 style="margin-bottom:16px;">✅ Prix Référencés</h3>
+        <h3 id="pricesTitle" style="margin-bottom:16px;">✅ Prix Référencés</h3>
         <table>
-            <thead>
-                <tr>
-                    <th>Produit</th>
-                    <th>Marché</th>
-                    <th>Prix (FBu)</th>
-                    <th>Vendeur</th>
-                </tr>
-            </thead>
-            <tbody id="pricesList">
-                <tr><td>Mchele 1kg</td><td>Marché Central</td><td>4,800</td><td>—</td></tr>
-                <tr><td>Maharagwe 1kg</td><td>Rohero</td><td>1,780</td><td>—</td></tr>
-                <tr><td>Mafuta 1L</td><td>Kinindo</td><td>5,800</td><td>—</td></tr>
-            </tbody>
+            <thead><tr>
+                <th id="productHeading">Produit</th><th id="marketHeading">Marché</th><th id="priceHeading">Prix (FBu)</th><th id="sellerHeading">Vendeur</th>
+            </tr></thead>
+            <tbody id="pricesList"></tbody>
         </table>
     </div>
 
     <div class="form-section">
-        <h3>✏️ Proposer un prix</h3>
+        <h3 id="proposalTitle">✏️ Proposer un prix</h3>
         <div class="form-grid">
-            <div>
-                <label>Produit</label>
-                <input type="text" id="prodName" placeholder="ex: Mchele 1kg">
-            </div>
-            <div>
-                <label>Marché</label>
-                <input type="text" id="marketName" placeholder="ex: Marché Central">
-            </div>
-            <div>
-                <label>Prix (FBu)</label>
-                <input type="number" id="prodPrice" placeholder="ex: 4800">
-            </div>
-            <div>
-                <label>Vendeur / Magasin</label>
-                <input type="text" id="sellerName" placeholder="Ton nom">
-            </div>
+            <div><label id="productLabel" for="prodName">Produit</label><input type="text" id="prodName" placeholder="ex: Mchele 1kg"></div>
+            <div><label id="marketLabel" for="marketName">Marché</label><input type="text" id="marketName" placeholder="ex: Marché Central"></div>
+            <div><label id="priceLabel" for="prodPrice">Prix (FBu)</label><input type="number" id="prodPrice" placeholder="ex: 4800"></div>
+            <div><label id="sellerLabel" for="sellerName">Vendeur / Magasin</label><input type="text" id="sellerName" placeholder="Ton nom"></div>
         </div>
-        <button class="btn btn-whatsapp btn-block" onclick="sendByWhatsApp()">📤 Envoyer par WhatsApp</button>
-        <p style="font-size:12px;color:var(--text-light);margin-top:8px;">Ton prix sera vérifié avant publication ✅</p>
+        <button id="submitLabel" class="btn btn-whatsapp btn-block" onclick="sendByWhatsApp()">📤 Envoyer par WhatsApp</button>
+        <p id="proposalNote" style="font-size:12px;color:var(--text-light);margin-top:8px;">Ton prix sera vérifié avant publication ✅</p>
     </div>
 
-    <footer>
-        SOKO.bi • Prix des marchés de Bujumbura
-    </footer>
+    <footer id="footer">SOKO.bi • Prix des marchés de Bujumbura</footer>
 </div>
 
 <script>
 // MOT DE PASSE ADMIN — Tu peux le changer ici !
-const ADMIN_PASSWORD = "soko2026"; 
+const ADMIN_PASSWORD = "soko2026";
 
-// Valeurs par défaut
-let settings = {
-    rateBuy: 2980,
-    rateSell: 2990,
-    whatsappNumber: "+257690000000"
+const defaultSettings = { rateBuy: 2980, rateSell: 2990, whatsappNumber: "+257690000000" };
+const defaultContent = {
+    brandInitial: "S", brandName: "SOKO", brandUrl: "SOKO.bi",
+    rateTitle: "USD / BIF", indexTitle: "Indice Prix", indexValue: "108.4", indexTrend: "+1.2% vs semaine dernière",
+    marketsTitle: "Marchés", marketsValue: "8", marketsSubtitle: "Bujumbura • Actif",
+    pricesTitle: "✅ Prix Référencés", productHeading: "Produit", marketHeading: "Marché", priceHeading: "Prix (FBu)", sellerHeading: "Vendeur",
+    proposalTitle: "✏️ Proposer un prix", productLabel: "Produit", marketLabel: "Marché", priceLabel: "Prix (FBu)", sellerLabel: "Vendeur / Magasin",
+    submitLabel: "📤 Envoyer par WhatsApp", proposalNote: "Ton prix sera vérifié avant publication ✅", footer: "SOKO.bi • Prix des marchés de Bujumbura",
+    rows: [
+        { product: "Mchele 1kg", market: "Marché Central", price: "4,800", seller: "—" },
+        { product: "Maharagwe 1kg", market: "Rohero", price: "1,780", seller: "—" },
+        { product: "Mafuta 1L", market: "Kinindo", price: "5,800", seller: "—" }
+    ]
 };
+let settings = { ...defaultSettings };
+let content = JSON.parse(JSON.stringify(defaultContent));
 
-// Charger les données sauvegardées
 function loadData() {
-    const saved = localStorage.getItem('soko_settings');
-    if (saved) {
-        settings = JSON.parse(saved);
+    try {
+        const savedSettings = localStorage.getItem('soko_settings');
+        if (savedSettings) settings = { ...defaultSettings, ...JSON.parse(savedSettings) };
+        const savedContent = localStorage.getItem('soko_content');
+        if (savedContent) content = { ...defaultContent, ...JSON.parse(savedContent) };
+    } catch (error) {
+        console.error('Impossible de charger les données enregistrées.', error);
     }
     updateDisplay();
+    fillContentEditor();
 }
 
 function updateDisplay() {
-    document.getElementById('rBuy').textContent = settings.rateBuy.toLocaleString();
-    document.getElementById('rSell').textContent = settings.rateSell.toLocaleString();
+    document.getElementById('rBuy').textContent = Number(settings.rateBuy).toLocaleString();
+    document.getElementById('rSell').textContent = Number(settings.rateSell).toLocaleString();
+    document.getElementById('displayRate').textContent = `${Number(settings.rateBuy).toLocaleString()} BIF`;
     document.getElementById('rateBuy').value = settings.rateBuy;
     document.getElementById('rateSell').value = settings.rateSell;
     document.getElementById('whatsappNum').value = settings.whatsappNumber;
+    Object.keys(content).forEach(key => {
+        if (key === 'rows') return;
+        const element = document.getElementById(key);
+        if (element) element.textContent = content[key];
+    });
+    renderPrices();
+}
+
+function renderPrices() {
+    const list = document.getElementById('pricesList');
+    list.replaceChildren();
+    (Array.isArray(content.rows) ? content.rows : []).forEach(row => {
+        const tr = document.createElement('tr');
+        ['product', 'market', 'price', 'seller'].forEach(key => {
+            const td = document.createElement('td');
+            td.textContent = row[key] == null ? '' : String(row[key]);
+            tr.appendChild(td);
+        });
+        list.appendChild(tr);
+    });
+}
+
+function fillContentEditor() {
+    document.querySelectorAll('[data-content]').forEach(input => {
+        input.value = content[input.dataset.content] || '';
+    });
+    document.getElementById('contentRows').value = JSON.stringify(content.rows, null, 2);
 }
 
 // Modal Login
@@ -238,12 +292,10 @@ function openLoginModal() {
     document.getElementById('adminPassword').value = '';
     document.getElementById('loginError').style.display = 'none';
 }
-
 function closeLoginModal() {
     document.getElementById('adminLoginModal').classList.remove('active');
     document.getElementById('adminPassword').value = '';
 }
-
 function verifyPassword() {
     const input = document.getElementById('adminPassword').value;
     if (input === ADMIN_PASSWORD) {
@@ -253,62 +305,89 @@ function verifyPassword() {
         document.getElementById('loginError').style.display = 'block';
     }
 }
-
-function closeAdminPanel() {
-    document.getElementById('adminPanel').classList.remove('open');
-}
+function closeAdminPanel() { document.getElementById('adminPanel').classList.remove('open'); }
 
 // Onglets Admin
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(panel => panel.classList.remove('active'));
         tab.classList.add('active');
         document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
     });
 });
 
 function saveSettings() {
-    settings.rateBuy = parseInt(document.getElementById('rateBuy').value);
-    settings.rateSell = parseInt(document.getElementById('rateSell').value);
-    settings.whatsappNumber = document.getElementById('whatsappNum').value;
+    const rateBuy = Number.parseInt(document.getElementById('rateBuy').value, 10);
+    const rateSell = Number.parseInt(document.getElementById('rateSell').value, 10);
+    if (!Number.isFinite(rateBuy) || !Number.isFinite(rateSell)) return;
+    settings.rateBuy = rateBuy;
+    settings.rateSell = rateSell;
+    settings.whatsappNumber = document.getElementById('whatsappNum').value.trim();
     localStorage.setItem('soko_settings', JSON.stringify(settings));
     updateDisplay();
-    const success = document.getElementById('saveSuccess');
-    success.classList.add('show');
-    setTimeout(() => success.classList.remove('show'), 2500);
+    showSuccess('saveSuccess');
+}
+
+function saveContent() {
+    const error = document.getElementById('contentError');
+    error.style.display = 'none';
+    let rows;
+    try {
+        rows = JSON.parse(document.getElementById('contentRows').value);
+        if (!Array.isArray(rows) || rows.some(row => !row || typeof row !== 'object' || ['product', 'market', 'price', 'seller'].some(key => !(key in row)))) {
+            throw new Error('Le JSON doit être un tableau d’objets contenant product, market, price et seller.');
+        }
+    } catch (exception) {
+        error.textContent = `Contenus non enregistrés : ${exception.message}`;
+        error.style.display = 'block';
+        return;
+    }
+    document.querySelectorAll('[data-content]').forEach(input => {
+        content[input.dataset.content] = input.value.trim();
+    });
+    content.rows = rows;
+    localStorage.setItem('soko_content', JSON.stringify(content));
+    updateDisplay();
+    showSuccess('contentSuccess');
+}
+
+function showSuccess(id) {
+    const message = document.getElementById(id);
+    message.classList.add('show');
+    setTimeout(() => message.classList.remove('show'), 2500);
 }
 
 function exportData() {
-    const data = JSON.stringify(settings, null, 2);
+    const data = JSON.stringify({ settings, content }, null, 2);
     const blob = new Blob([data], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'soko-backup.json';
     a.click();
+    URL.revokeObjectURL(a.href);
 }
-
 function resetData() {
-    if (confirm('Réinitialiser toutes les valeurs ?')) {
+    if (confirm('Réinitialiser tous les paramètres et contenus ?')) {
         localStorage.removeItem('soko_settings');
-        settings = { rateBuy:2980, rateSell:2990, whatsappNumber:"+257690000000" };
+        localStorage.removeItem('soko_content');
+        settings = { ...defaultSettings };
+        content = JSON.parse(JSON.stringify(defaultContent));
         updateDisplay();
+        fillContentEditor();
         closeAdminPanel();
     }
 }
-
 function sendByWhatsApp() {
     const prod = document.getElementById('prodName').value || 'Non renseigné';
     const market = document.getElementById('marketName').value || 'Non renseigné';
     const price = document.getElementById('prodPrice').value || '0';
     const seller = document.getElementById('sellerName').value || 'Anonyme';
-
-    const message = `📥 Nouvelle proposition de prix:%0A%0AProduit: ${prod}%0AMarché: ${market}%0APrix: ${price} FBu%0AVendeur: ${seller}`;
-    const url = `https://wa.me/${settings.whatsappNumber.replace(/\D/g,'')}?text=${message}`;
-    window.open(url, '_blank');
+    const message = `📥 Nouvelle proposition de prix:\n\nProduit: ${prod}\nMarché: ${market}\nPrix: ${price} FBu\nVendeur: ${seller}`;
+    const url = `https://wa.me/${settings.whatsappNumber.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener');
 }
 
-// Initialisation
 loadData();
 </script>
 
