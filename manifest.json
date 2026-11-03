@@ -1,0 +1,22 @@
+{
+  "name": "SOKO.bi - Bei ya Soko Bujumbura",
+  "short_name": "SOKO",
+  "description": "Bei za bidhaa za soko za Bujumbura, kiwango cha dola USD/BIF, na uwezo wa kutuma bei yako.",
+  "lang": "sw",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6fbf7",
+  "theme_color": "#0b5d2e",
+  "categories": ["business", "finance", "shopping"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
