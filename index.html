@@ -175,7 +175,27 @@ footer b{color:var(--green)}
   </div>
 
   <div class="card">
-    <h3>✍️ Weka Bei Yako</h3>
+    <div class="card" id="adminPanel" style="display:none;border:2px solid #0b5d2e">
+  <h3>🔒 Admin - Weka Bei Yako (Wewe Tu)</h3>
+  <form id="priceForm">
+    <input id="prod" placeholder="Bidhaa: Mchele 1kg" required>
+    <input id="market" placeholder="Soko: Cotebu" required>
+    <input id="price" type="number" placeholder="Bei FBu" required>
+    <input id="name" placeholder="Jina la duka" required>
+    <button type="submit">Tuma kwa WhatsApp</button>
+  </form>
+  <button onclick="logoutAdmin()" style="margin-top:10px;background:#fee;color:#d32f2f;border:0;padding:8px 12px;border-radius:6px;width:100%">Toka Admin</button>
+</div>
+
+<div id="adminLogin" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:99999;justify-content:center;align-items:center">
+  <div style="background:white;padding:20px;border-radius:14px;width:90%;max-width:300px">
+    <h3>Ingia Admin</h3>
+    <input id="adminPass" type="password" placeholder="Password ya admin" style="width:100%;padding:10px;margin:10px 0;border:1px solid #ddd;border-radius:8px">
+    <button onclick="checkAdmin()" style="background:#0b5d2e;color:white;border:0;padding:10px;width:100%;border-radius:8px;font-weight:700">Ingia</button>
+    <button onclick="document.getElementById('adminLogin').style.display='none'" style="margin-top:8px;background:#eee;border:0;padding:8px;width:100%;border-radius:8px">Funga</button>
+    <p style="font-size:11px;color:#888;margin-top:8px">Hint: Bonyeza SOKO mara 5 ili kufungua hii</p>
+  </div>
+</div>
     <form class="f" id="priceForm">
       <div class="row2">
         <input id="prod" placeholder="Bidhaa: Mchele 1kg" required>
@@ -594,6 +614,38 @@ window.App={notif:notif,install:install,openAdmin:openAdmin,closeAdmin:closeAdmi
 
 renderAll();
 })();
-</script>
+</script>// ADMIN SIRI - WEWE TU
+let tapCount = 0;
+function adminTap(){
+  tapCount++;
+  if(tapCount>=5){
+    tapCount=0;
+    document.getElementById('adminLogin').style.display='flex';
+  }
+  setTimeout(()=>tapCount=0, 3000); // reset baada ya 3sec
+}
+
+function checkAdmin(){
+  const pass = document.getElementById('adminPass').value;
+  // BADILISHA HAPA PASSWORD YAKO YA SIRI - usiweke 1234
+  if(pass === "SOKO2026!"){
+    localStorage.setItem('soko-admin','true');
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminPanel').style.display='block';
+    alert('Karibu Admin! Sasa unaweza kuweka bei');
+  }else{
+    alert('Password si sahihi!');
+  }
+}
+
+function logoutAdmin(){
+  localStorage.removeItem('soko-admin');
+  document.getElementById('adminPanel').style.display='none';
+}
+
+// Kama alishalogin, onyesha panel
+if(localStorage.getItem('soko-admin')==='true'){
+  document.getElementById('adminPanel').style.display='block';
+}
 </body>
 </html>
