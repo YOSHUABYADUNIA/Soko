@@ -6,7 +6,7 @@
     <title>SOKO | Prix Marchés Bujumbura</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#006633">
-    <meta name="description" content="Prix des produits dans les marchés de Bujumbura - BIF / USD">
+    <meta name="description" content="Prix des marchés de Bujumbura">
     <link rel="icon" href="icon.svg">
     <style>
         :root {
@@ -17,574 +17,73 @@
             --gray: #f5f5f5;
             --text: #1a1a1a;
             --text-light: #666;
-            --shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-        }
-
-        body {
-            background: #f8f9fa;
-            color: var(--text);
-            line-height: 1.5;
-            padding-bottom: 60px;
-        }
-
-        /* ===== HEADER ===== */
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-mark {
-            font-size: 24px;
-            font-weight: 800;
-            background: white;
-            color: var(--primary);
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-text h1 {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .logo-text p {
-            font-size: 11px;
-            opacity: 0.8;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 9px 16px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #005529;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid white;
-            color: white;
-        }
-
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.15);
-        }
-
-        .btn-admin {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            font-size: 13px;
-            padding: 7px 12px;
-        }
-
-        .btn-admin:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 18px;
-        }
-
-        /* ===== CARDS GRID ===== */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .card-title {
-            font-size: 13px;
-            color: var(--text-light);
-            margin-bottom: 6px;
-        }
-
-        .card-value {
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .card-sub {
-            font-size: 13px;
-            color: var(--text-light);
-        }
-
-        .trend {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 14px;
-            margin-top: 6px;
-        }
-
-        .trend.up { color: #2e7d32; }
-        .trend.down { color: #c62828; }
-
-        /* ===== MODAL LOGIN ===== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 300;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.25s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            background: white;
-            border-radius: 12px;
-            padding: 28px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-        }
-
-        .modal h3 {
-            margin-bottom: 8px;
-            font-size: 20px;
-        }
-
-        .modal p {
-            color: var(--text-light);
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 15px;
-            margin-bottom: 12px;
-        }
-
-        .modal input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 8px;
-        }
-
-        .error-msg {
-            color: var(--danger);
-            font-size: 13px;
-            margin-bottom: 10px;
-            display: none;
-        }
-
-        /* ===== ADMIN PANEL ===== */
-        .admin-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 380px;
-            max-width: 100%;
-            height: 100vh;
-            background: white;
-            box-shadow: -4px 0 20px rgba(0,0,0,0.12);
-            z-index: 250;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            overflow-y: auto;
-        }
-
-        .admin-panel.open {
-            transform: translateX(0);
-        }
-
-        .admin-header {
-            background: var(--primary);
-            color: white;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-        }
-
-        .admin-header h3 {
-            font-size: 17px;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .admin-content {
-            padding: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 14px;
-            font-size: 14px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-        }
-
-        .tab.active {
-            border-bottom-color: var(--primary);
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .admin-section {
-            margin-bottom: 24px;
-        }
-
-        .admin-section h4 {
-            font-size: 15px;
-            color: var(--primary);
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #eee;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-light);
-            margin: 10px 0 4px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .btn-block {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-        }
-
-        .success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 10px 14px;
-            border-radius: 6px;
-            margin-top: 12px;
-            display: none;
-            font-size: 14px;
-        }
-
-        .success.show {
-            display: block;
-        }
-
-        .danger-btn {
-            background: var(--danger);
-            color: white;
-        }
-
-        .danger-btn:hover {
-            background: #b71c1c;
-        }
-
-        .market-item, .price-item {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .market-item input, .price-item input {
-            flex: 1;
-            margin: 0;
-        }
-
-        .delete-btn {
-            background: #ffebee;
-            color: var(--danger);
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .hidden { display: none !important; }
-
-        /* ===== CHART & TABLE ===== */
-        .chart-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .chart-header h3 {
-            font-size: 17px;
-        }
-
-        .chart-header span {
-            font-size: 13px;
-            color: var(--text-light);
-        }
-
-        svg { max-width: 100%; overflow: visible; }
-
-        .market-quick {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px;
-        }
-
-        .market-card {
-            padding: 12px;
-            background: var(--primary-light);
-            border-radius: 8px;
-        }
-
-        .market-card h4 {
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-
-        .market-card p {
-            font-size: 13px;
-            color: var(--text-light);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
-
-        th, td {
-            padding: 12px 10px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-        th {
-            background: var(--gray);
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .tag-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .search-bar {
-            position: relative;
-            flex: 1;
-            min-width: 180px;
-        }
-
-        .search-bar input {
-            padding-left: 36px;
-        }
-
-        .search-bar::before {
-            content: "🔍";
-            position: absolute;
-            left: 12px;
-            top: 10px;
-            font-size: 14px;
-        }
-
-        .filters-bar {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        select.filter-soko {
-            max-width: 160px;
-        }
-
-        /* ===== FORM ===== */
-        .form-section {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            margin-top: 24px;
-        }
-
-        .form-section h3 {
-            margin-bottom: 18px;
-            font-size: 17px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 14px;
-        }
-
-        .btn-whatsapp {
-            background: #25d366;
-            color: white;
-            font-size: 16px;
-            margin-top: 16px;
-        }
-
-        .btn-whatsapp:hover {
-            background: #1da851;
-        }
-
-        .form-note {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-top: 10px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-light);
-            font-size: 13px;
-            margin-top: 40px;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-            table { display: block; overflow-x: auto; }
-            .admin-panel { width: 100%; }
-            .filters-bar { flex-direction: column; align-items: stretch; }
-            select.filter-soko { max-width: 100%; }
-        }
+        * {margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;}
+        body {background:#f8f9fa;color:var(--text);line-height:1.5;padding-bottom:40px;}
+        header {background:var(--primary);color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+        .header-left {display:flex;align-items:center;gap:12px;}
+        .logo-mark {font-size:24px;font-weight:800;background:white;color:var(--primary);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+        .logo-text h1 {font-size:20px;}
+        .logo-text p {font-size:11px;opacity:0.8;}
+        .btn {padding:9px 16px;border:none;border-radius:6px;font-weight:500;cursor:pointer;font-size:14px;}
+        .btn-primary {background:var(--primary);color:white;}
+        .btn-admin {background:transparent;border:1px solid rgba(255,255,255,.3);color:white;padding:7px 12px;}
+        .container {max-width:1100px;margin:0 auto;padding:18px;}
+        .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px;}
+        .card {background:white;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+        .card-title {font-size:13px;color:var(--text-light);margin-bottom:6px;}
+        .card-value {font-size:30px;font-weight:700;margin-bottom:4px;}
+        .card-sub {font-size:13px;color:var(--text-light);}
+        .trend.up {color:#2e7d32;}
+        .hidden {display:none !important;}
+
+        /* Modal Login */
+        .modal-overlay {position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:300;opacity:0;visibility:hidden;transition:.25s;}
+        .modal-overlay.active {opacity:1;visibility:visible;}
+        .modal {background:white;border-radius:12px;padding:28px;max-width:400px;width:90%;}
+        .modal h3 {margin-bottom:8px;}
+        .modal input {width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin:12px 0;}
+        .modal-buttons {display:flex;gap:10px;justify-content:flex-end;}
+        .error-msg {color:var(--danger);font-size:13px;margin-bottom:10px;display:none;}
+
+        /* Admin Panel */
+        .admin-panel {position:fixed;top:0;right:0;width:380px;max-width:100%;height:100vh;background:white;box-shadow:-4px 0 20px rgba(0,0,0,.12);z-index:250;transform:translateX(100%);transition:.3s;overflow-y:auto;}
+        .admin-panel.open {transform:translateX(0);}
+        .admin-header {background:var(--primary);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;}
+        .close-btn {background:none;border:none;color:white;font-size:24px;cursor:pointer;}
+        .admin-content {padding:20px;}
+        .tabs {display:flex;border-bottom:1px solid #eee;margin-bottom:20px;}
+        .tab {padding:10px 14px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;}
+        .tab.active {border-bottom-color:var(--primary);color:var(--primary);font-weight:500;}
+        .tab-content {display:none;}
+        .tab-content.active {display:block;}
+        label {display:block;font-size:13px;color:var(--text-light);margin:10px 0 4px;}
+        input,select,textarea {width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;}
+        .btn-block {width:100%;padding:12px;margin-top:10px;}
+        .success {background:#e8f5e9;color:#2e7d32;padding:10px;border-radius:6px;margin-top:12px;display:none;}
+        .success.show {display:block;}
+        .danger-btn {background:var(--danger);color:white;}
+        table {width:100%;border-collapse:collapse;margin-top:12px;}
+        th,td {padding:10px;text-align:left;border-bottom:1px solid #eee;font-size:14px;}
+        th {background:var(--gray);}
+        .form-section {background:white;border-radius:12px;padding:24px;margin-top:24px;}
+        .form-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+        .btn-whatsapp {background:#25d366;color:white;font-size:16px;margin-top:16px;}
+        footer {text-align:center;padding:24px;color:var(--text-light);font-size:13px;margin-top:40px;}
+        @media (max-width:600px) {.grid{grid-template-columns:1fr;}.admin-panel{width:100%;}}
     </style>
 </head>
 <body>
 
-<!-- MODULE: LOGIN ADMIN -->
+<!-- MODAL CONNEXION ADMIN -->
 <div id="adminLoginModal" class="modal-overlay">
     <div class="modal">
         <h3>🔐 Accès Administrateur</h3>
-        <p>Entrez le mot de passe pour gérer les prix et les paramètres</p>
+        <p>Entrez le mot de passe pour gérer les prix</p>
         <input type="password" id="adminPassword" placeholder="Mot de passe">
         <div id="loginError" class="error-msg">❌ Mot de passe incorrect</div>
         <div class="modal-buttons">
-            <button class="btn btn-outline" onclick="closeLoginModal()">Annuler</button>
+            <button class="btn" onclick="closeLoginModal()">Annuler</button>
             <button class="btn btn-primary" onclick="verifyPassword()">Se connecter</button>
         </div>
     </div>
@@ -593,15 +92,225 @@
 <!-- PANNEAU ADMIN -->
 <div id="adminPanel" class="admin-panel">
     <div class="admin-header">
-        <h3>⚙️ Badili - Gestion</h3>
+        <h3>⚙️ Badili</h3>
         <button class="close-btn" onclick="closeAdminPanel()">×</button>
     </div>
     <div class="admin-content">
         <div class="tabs">
             <span class="tab active" data-tab="general">Général</span>
-            <span class="tab" data-tab="markets">Marchés</span>
-            <span class="tab" data-tab="prices">Prix</span>
             <span class="tab" data-tab="backup">Sauvegarde</span>
         </div>
 
-        <!--
+        <div class="tab-content active" id="tab-general">
+            <h4 style="color:var(--primary);margin:16px 0 8px;">💱 Taux</h4>
+            <label>Taux Achat (BIF)</label>
+            <input type="number" id="rateBuy">
+            <label>Taux Vente (BIF)</label>
+            <input type="number" id="rateSell">
+            <label>WhatsApp (+257)</label>
+            <input type="text" id="whatsappNum">
+            <button class="btn btn-primary btn-block" onclick="saveSettings()">💾 Sauvegarder</button>
+            <div id="saveSuccess" class="success">✓ Sauvegardé</div>
+        </div>
+
+        <div class="tab-content" id="tab-backup">
+            <h4 style="color:var(--primary);margin:16px 0 8px;">📤 Exporter</h4>
+            <button class="btn" style="width:100%;" onclick="exportData()">Télécharger JSON</button>
+            <h4 style="color:var(--primary);margin:20px 0 8px;">⚠️ Réinitialiser</h4>
+            <button class="btn danger-btn" style="width:100%;" onclick="resetData()">Restaurer défauts</button>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header>
+    <div class="header-left">
+        <div class="logo-mark">S</div>
+        <div class="logo-text">
+            <h1>SOKO</h1>
+            <p>SOKO.bi</p>
+        </div>
+    </div>
+    <div>
+        <button id="adminLoginBtn" class="btn btn-admin" onclick="openLoginModal()">⚙️ Badili</button>
+    </div>
+</header>
+
+<!-- CONTENU PRINCIPAL -->
+<div class="container">
+    <div class="grid">
+        <div class="card">
+            <div class="card-title">USD / BIF</div>
+            <div class="card-value" id="displayRate">2,980 BIF</div>
+            <div class="card-sub">Achat <span id="rBuy">2,980</span> / Vente <span id="rSell">2,990</span></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Indice Prix</div>
+            <div class="card-value">108.4</div>
+            <div class="trend up">+1.2% vs semaine dernière</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Marchés</div>
+            <div class="card-value">8</div>
+            <div class="card-sub">Bujumbura • Actif</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom:16px;">✅ Prix Référencés</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Marché</th>
+                    <th>Prix (FBu)</th>
+                    <th>Vendeur</th>
+                </tr>
+            </thead>
+            <tbody id="pricesList">
+                <tr><td>Mchele 1kg</td><td>Marché Central</td><td>4,800</td><td>—</td></tr>
+                <tr><td>Maharagwe 1kg</td><td>Rohero</td><td>1,780</td><td>—</td></tr>
+                <tr><td>Mafuta 1L</td><td>Kinindo</td><td>5,800</td><td>—</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-section">
+        <h3>✏️ Proposer un prix</h3>
+        <div class="form-grid">
+            <div>
+                <label>Produit</label>
+                <input type="text" id="prodName" placeholder="ex: Mchele 1kg">
+            </div>
+            <div>
+                <label>Marché</label>
+                <input type="text" id="marketName" placeholder="ex: Marché Central">
+            </div>
+            <div>
+                <label>Prix (FBu)</label>
+                <input type="number" id="prodPrice" placeholder="ex: 4800">
+            </div>
+            <div>
+                <label>Vendeur / Magasin</label>
+                <input type="text" id="sellerName" placeholder="Ton nom">
+            </div>
+        </div>
+        <button class="btn btn-whatsapp btn-block" onclick="sendByWhatsApp()">📤 Envoyer par WhatsApp</button>
+        <p style="font-size:12px;color:var(--text-light);margin-top:8px;">Ton prix sera vérifié avant publication ✅</p>
+    </div>
+
+    <footer>
+        SOKO.bi • Prix des marchés de Bujumbura
+    </footer>
+</div>
+
+<script>
+// MOT DE PASSE ADMIN — Tu peux le changer ici !
+const ADMIN_PASSWORD = "soko2026"; 
+
+// Valeurs par défaut
+let settings = {
+    rateBuy: 2980,
+    rateSell: 2990,
+    whatsappNumber: "+257690000000"
+};
+
+// Charger les données sauvegardées
+function loadData() {
+    const saved = localStorage.getItem('soko_settings');
+    if (saved) {
+        settings = JSON.parse(saved);
+    }
+    updateDisplay();
+}
+
+function updateDisplay() {
+    document.getElementById('rBuy').textContent = settings.rateBuy.toLocaleString();
+    document.getElementById('rSell').textContent = settings.rateSell.toLocaleString();
+    document.getElementById('rateBuy').value = settings.rateBuy;
+    document.getElementById('rateSell').value = settings.rateSell;
+    document.getElementById('whatsappNum').value = settings.whatsappNumber;
+}
+
+// Modal Login
+function openLoginModal() {
+    document.getElementById('adminLoginModal').classList.add('active');
+    document.getElementById('adminPassword').value = '';
+    document.getElementById('loginError').style.display = 'none';
+}
+
+function closeLoginModal() {
+    document.getElementById('adminLoginModal').classList.remove('active');
+    document.getElementById('adminPassword').value = '';
+}
+
+function verifyPassword() {
+    const input = document.getElementById('adminPassword').value;
+    if (input === ADMIN_PASSWORD) {
+        closeLoginModal();
+        document.getElementById('adminPanel').classList.add('open');
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+    }
+}
+
+function closeAdminPanel() {
+    document.getElementById('adminPanel').classList.remove('open');
+}
+
+// Onglets Admin
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+function saveSettings() {
+    settings.rateBuy = parseInt(document.getElementById('rateBuy').value);
+    settings.rateSell = parseInt(document.getElementById('rateSell').value);
+    settings.whatsappNumber = document.getElementById('whatsappNum').value;
+    localStorage.setItem('soko_settings', JSON.stringify(settings));
+    updateDisplay();
+    const success = document.getElementById('saveSuccess');
+    success.classList.add('show');
+    setTimeout(() => success.classList.remove('show'), 2500);
+}
+
+function exportData() {
+    const data = JSON.stringify(settings, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'soko-backup.json';
+    a.click();
+}
+
+function resetData() {
+    if (confirm('Réinitialiser toutes les valeurs ?')) {
+        localStorage.removeItem('soko_settings');
+        settings = { rateBuy:2980, rateSell:2990, whatsappNumber:"+257690000000" };
+        updateDisplay();
+        closeAdminPanel();
+    }
+}
+
+function sendByWhatsApp() {
+    const prod = document.getElementById('prodName').value || 'Non renseigné';
+    const market = document.getElementById('marketName').value || 'Non renseigné';
+    const price = document.getElementById('prodPrice').value || '0';
+    const seller = document.getElementById('sellerName').value || 'Anonyme';
+
+    const message = `📥 Nouvelle proposition de prix:%0A%0AProduit: ${prod}%0AMarché: ${market}%0APrix: ${price} FBu%0AVendeur: ${seller}`;
+    const url = `https://wa.me/${settings.whatsappNumber.replace(/\D/g,'')}?text=${message}`;
+    window.open(url, '_blank');
+}
+
+// Initialisation
+loadData();
+</script>
+
+</body>
+</html>
