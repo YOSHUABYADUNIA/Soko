@@ -616,36 +616,3 @@ renderAll();
 </script>
 </body>
 </html>
-*// ADMIN SIRI - WEWE TU
-let tapCount = 0;
-function adminTap(){
-  tapCount++;
-  if(tapCount>=5){
-    tapCount=0;
-    document.getElementById('adminLogin').style.display='flex';
-  }
-  setTimeout(()=>tapCount=0, 3000); // reset baada ya 3sec
-}
-
-function checkAdmin(){
-  const pass = document.getElementById('adminPass').value;
-  *// BADILISHA HAPA PASSWORD YAKO YA SIRI - usiweke 1234
-  if(pass === "SOKO2026!"){
-    localStorage.setItem('soko-admin','true');
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminPanel').style.display='block';
-    alert('Karibu Admin! Sasa unaweza kuweka bei');
-  }else{
-    alert('Password si sahihi!');
-  }
-}
-
-function logoutAdmin(){
-  localStorage.removeItem('soko-admin');
-  document.getElementById('adminPanel').style.display='none';
-}
-
-// Kama alishalogin, onyesha panel
-if(localStorage.getItem('soko-admin')==='true'){
-  document.getElementById('adminPanel').style.display='block';
-}
