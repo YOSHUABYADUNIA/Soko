@@ -17,7 +17,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--txt);line-height:1.5}
-header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:10}
 .brand{display:flex;align-items:center;gap:10px}
 .brand .logo{width:38px;height:38px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--green);font-size:18px}
 .brand h1{font-size:20px;font-weight:800;letter-spacing:-.3px}
@@ -94,7 +94,7 @@ footer b{color:var(--green)}
 .btn-orange{background:#ef6c00;color:#fff}
 .btn-red{background:var(--red);color:#fff}
 .hint{font-size:11px;color:var(--muted);margin-top:4px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#102a18;color:#fff;padding:12px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#102a18;color:#fff;padding:12px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 .stat-mini{display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--muted);flex-wrap:wrap}
 .stat-mini b{color:var(--green)}
@@ -116,7 +116,6 @@ footer b{color:var(--green)}
 </header>
 
 <main class="grid">
-
   <div class="top">
     <div class="card">
       <small id="rateLabel">USD / BIF Rate</small>
@@ -189,7 +188,6 @@ footer b{color:var(--green)}
       <small class="hint">Bei yako itaongezwa moja kwa moja kwenye orodha (ina-subiri uthibitisho) na itatumwa kwa admin kupitia WhatsApp.</small>
     </form>
   </div>
-
 </main>
 
 <footer>
@@ -293,6 +291,8 @@ var CHART={
 var data=load();
 var mainChart=null,miniChart=null;
 var deferredPrompt=null;
+var adminAuthorized=false;
+var ADMIN_ACCESS_CODE="Voda@2026";
 
 function load(){
   try{
@@ -380,7 +380,7 @@ function renderPrices(){
   });
   document.getElementById("emptyMsg").style.display=arr.length?"none":"block";
   document.getElementById("pricesBody").innerHTML=arr.map(function(p){
-    return "<tr><td>"+p.prod+"</td><td>"+p.market+"</td><td class='b'>"+fmt(p.price)+" "+data.currency+"</td><td>"+p.seller+"</td><td>"+(p.date||"—")+"</td><td><span class='badge "+(p.verified?"ok":"wait")+"'>"+(p.verified?"Imethibitishwa":"Inasubiri")+"</span></td></tr>";
+    return "<tr><td>"+p.prod+"</td><td>"+p.market+"</td><td class='b'>"+fmt(p.price)+" "+data.currency+"</td><td>"+p.seller+"</td><td>"+(p.date||"—")+"</td><td><span class='badge "+(p.verified?"ok":"wait")+"">"+(p.verified?"✔ Imethibitishwa":"⏳ Inasubiri")+"</span></td></tr>";
   }).join("");
 }
 function renderCharts(){
@@ -475,6 +475,14 @@ if("serviceWorker" in navigator){
 
 /* ---------- Admin panel ---------- */
 function openAdmin(){
+  if(!adminAuthorized){
+    var enteredCode=window.prompt("Ingiza code ya usalama ili kufungua paneli ya Badili:");
+    if(enteredCode!==ADMIN_ACCESS_CODE){
+      toast("❌ Code si sahihi. Huwezi kufungua paneli ya admin.");
+      return;
+    }
+    adminAuthorized=true;
+  }
   document.getElementById("a_siteName").value=data.siteName;
   document.getElementById("a_whatsapp").value=data.whatsapp;
   document.getElementById("a_currency").value=data.currency;
@@ -488,9 +496,13 @@ function openAdmin(){
   buildAdminPriceRows();
   document.getElementById("adminOverlay").classList.add("open");
 }
-function closeAdmin(){document.getElementById("adminOverlay").classList.remove("open");}
+function closeAdmin(){
+  document.getElementById("adminOverlay").classList.remove("open");
+  adminAuthorized=false;
+}
 document.querySelectorAll(".tab").forEach(function(t){
   t.addEventListener("click",function(){
+    if(!adminAuthorized)return;
     document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active");});
     document.querySelectorAll(".tab-body").forEach(function(x){x.classList.remove("active");});
     t.classList.add("active");
@@ -498,6 +510,7 @@ document.querySelectorAll(".tab").forEach(function(t){
   });
 });
 function saveGeneral(){
+  if(!adminAuthorized)return;
   data.siteName=document.getElementById("a_siteName").value.trim()||"SOKO.bi";
   data.whatsapp=(document.getElementById("a_whatsapp").value.replace(/\D/g,""))||"25761000000";
   data.currency=document.getElementById("a_currency").value.trim()||"FBu";
@@ -523,15 +536,18 @@ function buildAdminPriceRows(){
 }
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function addPriceRow(){
+  if(!adminAuthorized)return;
   data.prices.unshift({id:Date.now(),prod:"",market:data.markets[0]||"",price:0,seller:"",verified:false,date:todayStr()});
   buildAdminPriceRows();
 }
 function delPriceRow(btn){
+  if(!adminAuthorized)return;
   var tr=btn.closest("tr");
   if(tr) tr.remove();
   toast("Safu itafutwa baada ya kuhifadhi");
 }
 function savePrices(){
+  if(!adminAuthorized)return;
   var rows=document.querySelectorAll("#adminPriceTable tbody tr");
   var arr=[];
   rows.forEach(function(tr){
@@ -550,12 +566,14 @@ function savePrices(){
   data.prices=arr;save();renderAll();toast("✅ Bei zote zimehifadhiwa ("+arr.length+")");
 }
 function saveMarkets(){
+  if(!adminAuthorized)return;
   var raw=document.getElementById("a_markets").value;
   data.markets=raw.split(/[\n,]+/).map(function(s){return s.trim();}).filter(Boolean);
   if(!data.markets.length) data.markets=DEFAULTS.markets.slice();
   save();renderAll();toast("✅ Masoko yamehifadhiwa ("+data.markets.length+")");
 }
 function exportData(){
+  if(!adminAuthorized)return;
   var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   var a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
@@ -564,6 +582,7 @@ function exportData(){
   toast("⬇️ Data imepakuliwa");
 }
 function importData(ev){
+  if(!adminAuthorized)return;
   var f=ev.target.files[0];if(!f)return;
   var r=new FileReader();
   r.onload=function(e){applyImport(e.target.result);};
@@ -571,9 +590,11 @@ function importData(ev){
   ev.target.value="";
 }
 function importFromText(){
+  if(!adminAuthorized)return;
   applyImport(document.getElementById("importText").value);
 }
 function applyImport(raw){
+  if(!adminAuthorized)return;
   try{
     var d=JSON.parse(raw);
     data=Object.assign(JSON.parse(JSON.stringify(DEFAULTS)),d);
@@ -581,6 +602,7 @@ function applyImport(raw){
   }catch(e){toast("❌ JSON si sahihi: "+e.message);}
 }
 function resetData(){
+  if(!adminAuthorized)return;
   if(!confirm("Una uhakika? Data yote yaliyobadilishwa yatafutwa na kurudisha default."))return;
   localStorage.removeItem(KEY);
   data=JSON.parse(JSON.stringify(DEFAULTS));
