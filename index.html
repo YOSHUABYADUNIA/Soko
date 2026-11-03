@@ -612,9 +612,8 @@ window.App={notif:notif,install:install,openAdmin:openAdmin,closeAdmin:closeAdmi
   saveGeneral:saveGeneral,addPriceRow:addPriceRow,delPriceRow:delPriceRow,savePrices:savePrices,
   saveMarkets:saveMarkets,exportData:exportData,importData:importData,importFromText:importFromText,resetData:resetData};
 
-renderAll();
-})();
-</script>// ADMIN SIRI - WEWE TU
+
+*// ADMIN SIRI - WEWE TU
 let tapCount = 0;
 function adminTap(){
   tapCount++;
@@ -627,7 +626,7 @@ function adminTap(){
 
 function checkAdmin(){
   const pass = document.getElementById('adminPass').value;
-  // BADILISHA HAPA PASSWORD YAKO YA SIRI - usiweke 1234
+  *// BADILISHA HAPA PASSWORD YAKO YA SIRI - usiweke 1234
   if(pass === "SOKO2026!"){
     localStorage.setItem('soko-admin','true');
     document.getElementById('adminLogin').style.display='none';
@@ -647,5 +646,8 @@ function logoutAdmin(){
 if(localStorage.getItem('soko-admin')==='true'){
   document.getElementById('adminPanel').style.display='block';
 }
+renderAll();
+})();
+</script>
 </body>
 </html>
