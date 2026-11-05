@@ -1,4 +1,4 @@
-# SOKO.bi 🌽💰
+# SOKO 🌽💰
 ### Bei ya Soko Bujumbura - Live Market Price Tracker
 
 SOKO ni jina rahisi la neno moja linalomaanisha SOKO. Inasaidia wanunuzi na wafanyabiashara wa Bujumbura, Burundi kujua bei halisi ya chakula na kiwango cha dola kwa wakati halisi.
