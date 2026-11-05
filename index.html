@@ -217,71 +217,7 @@ footer b{color:var(--green)}
   <span id="footWa">WhatsApp: —</span> • Mwisho sasishwa: <span id="footDate">—</span>
 </footer>
 
-<!-- ADMIN PANEL -->
-<div class="overlay" id="adminOverlay" onclick="if(event.target===this)App.closeAdmin()">
-  <div class="panel">
-    <div class="panel-head">
-      <h2>⚙️ Badili Data - Admin Panel</h2>
-      <button class="panel-close" onclick="App.closeAdmin()">✕</button>
-    </div>
-    <div class="tabs">
-      <button class="tab active" data-tab="general">🔧 General</button>
-      <button class="tab" data-tab="prices">🏷️ Bei & Bidhaa</button>
-      <button class="tab" data-tab="markets">📍 Masoko</button>
-      <button class="tab" data-tab="data">💾 Data Backup</button>
-    </div>
-
-    <div class="tab-body active" id="tab-general">
-      <div class="field"><label>Jina la Tovuti (Site Name)</label><input id="a_siteName"></div>
-      <div class="row2">
-        <div class="field"><label>Nambari ya WhatsApp (tu tarakimu, n.m. 257...)</label><input id="a_whatsapp" inputmode="numeric"></div>
-        <div class="field"><label>Sarafu (Currency code)</label><input id="a_currency"></div>
-      </div>
-      <div class="field"><label>Kichwa cha Kiwango cha Dola (n.m. USD / BIF Rate)</label><input id="a_rateLabel"></div>
-      <div class="row2">
-        <div class="field"><label>Bei ya Kununua (Buy)</label><input id="a_rateBuy" type="number"></div>
-        <div class="field"><label>Bei ya Kuuza (Sell)</label><input id="a_rateSell" type="number"></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Benki Kuu (Bank rate)</label><input id="a_rateBank" type="number"></div>
-        <div class="field"><label>Avg Food Price Index</label><input id="a_foodIndex" type="number" step="0.1"></div>
-      </div>
-      <div class="field"><label>Mabadiliko ya Index (%) - weka hasi ikiya imepungua</label><input id="a_foodChange" type="number" step="0.1"></div>
-      <button class="btn-sm btn-green" onclick="App.saveGeneral()">💾 Hifadhi Mabadiliko</button>
-    </div>
-
-    <div class="tab-body" id="tab-prices">
-      <p class="hint">Hariri bei moja kwa moja. Kichupo ✔ = imethibitishwa. Unda safu mpya kwa kubonyeza "Ongeza".</p>
-      <div style="overflow-x:auto;margin-top:8px">
-        <table class="admin-table" id="adminPriceTable">
-          <thead><tr><th>Bidhaa</th><th>Soko</th><th>Bei</th><th>Muuzaji</th><th>✔</th><th></th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <button class="btn-sm btn-green" onclick="App.addPriceRow()">➕ Ongeza Bei Mpya</button>
-      <button class="btn-sm btn-blue" onclick="App.savePrices()">💾 Hifadhi Bei Zote</button>
-    </div>
-
-    <div class="tab-body" id="tab-markets">
-      <p class="hint">Orodha ya masoko (kutengana na mstari mpya au comma):</p>
-      <div class="field"><textarea id="a_markets" rows="8"></textarea></div>
-      <button class="btn-sm btn-green" onclick="App.saveMarkets()">💾 Hifadhi Masoko</button>
-    </div>
-
-    <div class="tab-body" id="tab-data">
-      <p class="hint">Data yote inahifadhiwa kwenye simu (localStorage). Toa nakala au rudisha kutoka nakala.</p>
-      <button class="btn-sm btn-blue" onclick="App.exportData()">⬇️ Pakua Data (JSON)</button>
-      <button class="btn-sm btn-orange" onclick="document.getElementById('importFile').click()">⬆️ Rudisha Data (JSON)</button>
-      <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="App.importData(event)">
-      <button class="btn-sm btn-red" onclick="App.resetData()">🗑️ Rudisha Default (Futa Yote)</button>
-      <div class="field" style="margin-top:14px"><label>AU: bandika JSON hapa kisha bonyeza Rudisha</label><textarea id="importText" rows="5" placeholder='{"siteName":"SOKO.bi",...}'></textarea></div>
-      <button class="btn-sm btn-orange" onclick="App.importFromText()">📋 Rudisha kutoka maandishi</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
+<
 <script>
 (function(){
 "use strict";
