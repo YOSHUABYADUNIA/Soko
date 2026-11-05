@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panneau Administration - SOKO</title>
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #f5f7fa; padding: 20px; max-width: 800px; margin: 0 auto; }
+        
+        /* Ecran de connexion */
+        #loginScreen {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 100px auto;
+            text-align: center;
+        }
+        #loginScreen h2 { color: #2c3e50; margin-bottom: 25px; }
+        #loginScreen input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        #loginScreen button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+        #loginScreen button:hover { background: #219653; }
+        .erreur { color: #e74c3c; margin-top: 10px; display: none; }
+        
+        /* Panneau admin */
+        #adminPanel { display: none; }
+        .entete { display: flex; justify-content: space-between; align-items: center; }
+        .deconnexion { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .carte {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        h2 { color: #2c3e50; margin-top: 0; }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 14px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        button:hover { opacity: 0.9; }
+        button.succes { background: #27ae60; }
+        button.ajouter { background: #9b59b6; }
+        .ligne { border-bottom: 1px solid #eee; padding: 12px 0; }
+        .supprimer { background: #e74c3c; padding: 5px 10px; font-size: 12px; }
+        .avertissement {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        textarea { min-height: 120px; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <!-- Ecran de connexion -->
+    <div id="loginScreen">
+        <h2>🔐 Accès Administrateur</h2>
+        <input type="password" id="motDePasse" placeholder="Entrer le mot de passe">
+        <button onclick="verifierMotDePasse()">Se connecter</button>
+        <div class="erreur" id="msgErreur">Mot de passe incorrect !</div>
+    </div>
+
+    <!-- Panneau d'administration -->
+    <div id="adminPanel">
+        <div class="entete">
+            <h1>🛠️ Panneau de Gestion SOKO</h1>
+            <button class="deconnexion" onclick="deconnexion()">Déconnexion</button>
+        </div>
+
+        <div class="avertissement">
+            ⚠️ Quand tu as terminé tes modifications, copie le code généré en bas et remplace l'ancien code dans ton fichier index.html.
+        </div>
+
+        <!-- Taux de change -->
+        <div class="carte">
+            <h2>💰 Taux de change</h2>
+            <label>Taux USD/BIF :</label>
+            <input type="number" id="tauxUsd" placeholder="2980">
+            
+            <label>Taux Achat :</label>
+            <input type="number" id="tauxAchat" placeholder="2980">
+            
+            <label>Taux Vente :</label>
+            <input type="number" id="tauxVente" placeholder="2990">
+            
+            <button class="succes" onclick="sauvegarderTaux()">Sauvegarder le taux</button>
+        </div>
+
+        <!-- Indice des prix -->
+        <div class="carte">
+            <h2>📊 Indice des prix</h2>
+            <label>Valeur actuelle :</label>
+            <input type="number" step="0.1" id="indiceValeur" placeholder="108.4">
+            
+            <label>Variation (%) :</label>
+            <input type="number" step="0.1" id="indiceVariation" placeholder="1.2">
+            
+            <button class="succes" onclick="sauvegarderIndice()">Sauvegarder l'indice</button>
+        </div>
+
+        <!-- Liste des prix -->
+        <div class="carte">
+            <h2>🏪 Prix des produits par marché</h2>
+            
+            <div id="listePrix">
+                <!-- Les lignes s'ajoutent ici -->
+            </div>
+
+            <button class="ajouter" onclick="ajouterLigne()">➕ Ajouter un produit</button>
+        </div>
+
+        <!-- Code généré -->
+        <div class="carte">
+            <h2>📄 Code à copier</h2>
+            <p>Copie ce bloc et remplace la partie correspondante dans ton index.html :</p>
+            <textarea id="codeGenere" readonly></textarea>
+            <button onclick="copierCode()">📋 Copier le code</button>
+        </div>
+    </div>
+
+<script>
+// ==================== CONFIGURATION ====================
+const MOT_DE_PASSE = "GraJosh"; // 🔑 Ton mot de passe
+// ========================================================
+
+let donnees = {
+    tauxUsd: 2980,
+    tauxAchat: 2980,
+    tauxVente: 2990,
+    indiceValeur: 108.4,
+    indiceVariation: 1.2,
+    prix: [
+        { marche: "Marché Central", produit: "Mchele", prix: 4800 },
+        { marche: "Kinindo", produit: "Mafuta", prix: 5800 },
+        { marche: "Rohero", produit: "Maharagwe", prix: 1780 }
+    ]
+};
+
+// Connexion
+function verifierMotDePasse() {
+    const saisi = document.getElementById('motDePasse').value;
+    if (saisi === MOT_DE_PASSE) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        chargerDonnees();
+    } else {
+        document.getElementById('msgErreur').style.display = 'block';
+    }
+}
+
+function deconnexion() {
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('motDePasse').value = '';
+    document.getElementById('msgErreur').style.display = 'none';
+}
+
+// Charger les données dans le formulaire
+function chargerDonnees() {
+    document.getElementById('tauxUsd').value = donnees.tauxUsd;
+    document.getElementById('tauxAchat').value = donnees.tauxAchat;
+    document.getElementById('tauxVente').value = donnees.tauxVente;
+    document.getElementById('indiceValeur').value = donnees.indiceValeur;
+    document.getElementById('indiceVariation').value = donnees.indiceVariation;
+    rendreListePrix();
+    genererCode();
+}
+
+// Rendre la liste des prix modifiables
+function rendreListePrix() {
+    const conteneur = document.getElementById('listePrix');
+    conteneur.innerHTML = '';
+    
+    donnees.prix.forEach((item, index) => {
+        conteneur.innerHTML += `
+            <div class="ligne">
+                <strong>Produit ${index + 1}</strong>
+                <label>Marché :</label>
+                <input type="text" value="${item.marche}" onchange="donnees.prix[${index}].marche = this.value">
+                
+                <label>Produit :</label>
+                <input type="text" value="${item.produit}" onchange="donnees.prix[${index}].produit = this.value">
+                
+                <label>Prix (FBu) :</label>
+                <input type="number" value="${item.prix}" onchange="donnees.prix[${index}].prix = parseInt(this.value)">
+                
+                <button class="supprimer" onclick="supprimerLigne(${index})">Supprimer</button>
+            </div>
+        `;
+    });
+    
+    genererCode();
+}
+
+function ajouterLigne() {
+    donnees.prix.push({ marche: "", produit: "", prix: 0 });
+    rendreListePrix();
+}
+
+function supprimerLigne(index) {
+    donnees.prix.splice(index, 1);
+    rendreListePrix();
+}
+
+function sauvegarderTaux() {
+    donnees.tauxUsd = parseInt(document.getElementById('tauxUsd').value);
+    donnees.tauxAchat = parseInt(document.getElementById('tauxAchat').value);
+    donnees.tauxVente = parseInt(document.getElementById('tauxVente').value);
+    genererCode();
+    alert('✅ Taux sauvegardé !');
+}
+
+function sauvegarderIndice() {
+    donnees.indiceValeur = parseFloat(document.getElementById('indiceValeur').value);
+    donnees.indiceVariation = parseFloat(document.getElementById('indiceVariation').value);
+    genererCode();
+    alert('✅ Indice sauvegardé !');
+}
+
+// Génère le code HTML à copier dans ton site
+function genererCode() {
+    let code = `<!-- TAUX DE CHANGE -->
+<div class="taux">
+    <h3>USD / BIF Rate</h3>
+    <div class="valeur">${donnees.tauxUsd} BIF</div>
+    <p>Nunua ${donnees.tauxAchat} / Uza ${donnees.tauxVente} • Benki Kuu ${donnees.tauxUsd}</p>
+</div>
+
+<!-- INDICE DES PRIX -->
+<div class="indice">
+    <h3>Avg Food Price Index</h3>
+    <div class="valeur">${donnees.indiceValeur}</div>
+    <p>${donnees.indiceVariation > 0 ? '+' : ''}${donnees.indiceVariation}% vs wiki iliyopita</p>
+</div>
+
+<!-- PRIX PAR MARCHÉ -->
+<div class="marches">
+    <h3>Bei Zilizothibitishwa</h3>
+    <ul>
+${donnees.prix.map(p => `        <li>📍 ${p.marche} - ${p.produit} ${p.prix.toLocaleString()} FBu</li>`).join('\n')}
+    </ul>
+</div>`;
+    
+    document.getElementById('codeGenere').value = code;
+}
+
+function copierCode() {
+    const zone = document.getElementById('codeGenere');
+    zone.select();
+    document.execCommand('copy');
+    alert('✅ Code copié ! Colle-le dans ton index.html');
+}
+
+// Permettre la touche Entrée pour se connecter
+document.getElementById('motDePasse').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') verifierMotDePasse();
+});
+
+</script>
+</body>
+</html>
