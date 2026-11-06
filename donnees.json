@@ -1,0 +1,16 @@
+{
+  "tauxUsd": 2980,
+  "tauxAchat": 2980,
+  "tauxVente": 2990,
+  "indiceValeur": 108.4,
+  "indiceVariation": 1.2,
+  "prix": [
+    { "marche": "Marché Central", "produit": "Mchele 1kg", "prix": 4800, "vendeur": "Jean", "verifie": true, "date": "2026-11-01" },
+    { "marche": "Ruvumera", "produit": "Maharagwe 1kg", "prix": 3500, "vendeur": "Mama Aisha", "verifie": true, "date": "2026-11-02" },
+    { "marche": "Kinindo", "produit": "Mafuta 1L", "prix": 5800, "vendeur": "Salongo", "verifie": true, "date": "2026-11-02" },
+    { "marche": "Cotebu", "produit": "Ugali 2kg", "prix": 3200, "vendeur": "Duclair", "verifie": true, "date": "2026-10-30" },
+    { "marche": "Rohero", "produit": "Sukari 1kg", "prix": 2700, "vendeur": "Shop Ubumwe", "verifie": false, "date": "2026-11-03" }
+  ],
+  "marches": ["Marché Central", "Kinindo", "Rohero", "Cotebu", "Ruvumera", "Kanyosha", "Musaga"],
+  "derniereMiseAJour": "2026-11-05"
+}
