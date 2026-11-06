@@ -198,17 +198,17 @@ const DONNEES_DEFAUT = {
   indiceValeur: 108.4,
   indiceVariation: 1.2,
   prix: [
-    { marche: "Marché Central", produit: "Mchele 1kg", prix: 4800, vendeur: "Jean", verifie: true, date: aujourd'hui() },
-    { marche: "Ruvumera", produit: "Maharagwe 1kg", prix: 3500, vendeur: "Mama Aisha", verifie: true, date: aujourd'hui() },
-    { marche: "Kinindo", produit: "Mafuta 1L", prix: 5800, vendeur: "Salongo", verifie: true, date: aujourd'hui() },
-    { marche: "Cotebu", produit: "Ugali 2kg", prix: 3200, vendeur: "Duclair", verifie: true, date: aujourd'hui() },
-    { marche: "Rohero", produit: "Sukari 1kg", prix: 2700, vendeur: "Shop Ubumwe", verifie: false, date: aujourd'hui() }
+    { marche: "Marché Central", produit: "Mchele 1kg", prix: 4800, vendeur: "Jean", verifie: true, date: aujourdHui() },
+    { marche: "Ruvumera", produit: "Maharagwe 1kg", prix: 3500, vendeur: "Mama Aisha", verifie: true, date: aujourdHui() },
+    { marche: "Kinindo", produit: "Mafuta 1L", prix: 5800, vendeur: "Salongo", verifie: true, date: aujourdHui() },
+    { marche: "Cotebu", produit: "Ugali 2kg", prix: 3200, vendeur: "Duclair", verifie: true, date: aujourdHui() },
+    { marche: "Rohero", produit: "Sukari 1kg", prix: 2700, vendeur: "Shop Ubumwe", verifie: false, date: aujourdHui() }
   ],
   marches: ["Marché Central", "Kinindo", "Rohero", "Cotebu", "Ruvumera", "Kanyosha", "Musaga"],
-  derniereMiseAJour: aujourd'hui()
+  derniereMiseAJour: aujourdHui()
 };
 
-function aujourd'hui() {
+function aujourdHui() {
     return new Date().toISOString().split('T')[0];
 }
 
@@ -300,7 +300,7 @@ function ajouterProduit() {
         prix: 0,
         vendeur: "",
         verifie: false,
-        date: aujourd'hui()
+        date: aujourdHui()
     });
     rendreListePrix();
     genererJSON();
@@ -330,7 +330,7 @@ function genererJSON() {
         .filter(m => m.length > 0);
     
     // Mettre à jour la date
-    donnees.derniereMiseAJour = aujourd'hui();
+    donnees.derniereMiseAJour = aujourdHui();
     
     // Sauvegarder localement pour ne pas perdre les données
     localStorage.setItem('soko_admin_donnees', JSON.stringify(donnees));
@@ -352,3 +352,7 @@ function copierJSON() {
 
 // Permettre la touche Entrée pour se connecter
     
+
+</script>
+</body>
+</html>
