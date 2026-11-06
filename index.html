@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOKO.bi - Bei ya Soko Bujumbura</title>
+<meta name="description" content="Bei za bidhaa za soko za Bujumbura, kiwango cha dola USD/BIF, na uwezo wa kutuma bei yako.">
+<meta name="theme-color" content="#0b3d5d">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --green:#0b3d5d; --green2:#1565a8; --light:#e3f2fd; --accent:#3b82f6;
+  --red:#d32f2f; --bg:#f0f7ff; --card:#ffffff; --txt:#0f172a;
+  --muted:#64748b; --border:#e2e8f0;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);line-height:1.5}
+header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{width:38px;height:38px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--green);font-size:18px}
+.brand h1{font-size:20px;font-weight:800;letter-spacing:-.3px}
+.brand h1 span{font-size:11px;background:#bbdefb;color:var(--green);padding:3px 7px;border-radius:6px;margin-left:6px;vertical-align:middle}
+.head-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:0;border-radius:999px;padding:9px 15px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+.btn-admin{background:#fff;color:var(--green)}
+.btn-green{background:var(--accent);color:#fff}
+.btn-sm{border:0;border-radius:8px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer}
+.btn-outline{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:20px}
+.card{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid var(--border)}
+.card h3{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.card .big{font-size:28px;font-weight:800;color:var(--green)}
+.card .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.section{background:var(--card);border-radius:16px;padding:18px;border:1px solid var(--border);margin-bottom:20px}
+.section h2{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--border)}
+th{font-weight:600;color:var(--muted);font-size:12px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.badge-ok{background:#dcfce7;color:#166534}
+.badge-wait{background:#fef3c7;color:#92400e}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.panel{background:#fff;border-radius:18px;width:100%;max-width:720px;max-height:90vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:2}
+.panel-head h2{font-size:17px;font-weight:700}
+.panel-close{background:none;border:0;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px}
+.tabs{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{border:0;background:#f1f5f9;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.tab.active{background:var(--green);color:#fff}
+.tab-body{display:none;padding:18px 20px}
+.tab-body.active{display:block}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
+.field input,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.row2{grid-template-columns:1fr}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;z-index:200;opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1}
+#statusBar{font-size:12px;color:var(--muted);margin-top:8px}
+.loading{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">S</div>
+    <h1>SOKO <span>SOKO.bi</span></h1>
+  </div>
+  <div class="head-actions">
+    <button class="btn btn-outline" onclick="App.notif()">🔔 Market Privé</button>
+    <button class="btn btn-green" onclick="App.tumaBei()">💬 Tuma Bei</button>
+    <button class="btn btn-admin" id="btnBadili" onclick="App.openAdmin()">⚙️ Badili</button>
+    <button class="btn btn-outline" id="installBtn" style="display:none" onclick="App.install()">⬇️ Install App</button>
+  </div>
+</header>
+
+<main>
+  <div class="cards">
+    <div class="card">
+      <h3 id="rateLabel">USD / BIF Rate</h3>
+      <div class="big" id="rateBuy">—</div>
+      <div class="sub" id="rateSub">Nunua — / Uza — • Benki Kuu —</div>
+    </div>
+    <div class="card">
+      <h3>Avg Food Price Index</h3>
+      <div class="big" id="foodIndex">—</div>
+      <div class="sub" id="foodChange">—</div>
+    </div>
+    <div class="card">
+      <h3>Masoko</h3>
+      <div class="big" id="marketsCount">—</div>
+      <div class="sub" id="marketsInfo">Bujumbura • Active</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="section">
+      <h2>📈 Bei ya Chakula vs Dola - Siku 30</h2>
+      <canvas id="mainChart" height="220"></canvas>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Dola ikipanda, chakula hupanda pia. Correlation r ≈ 0.92</p>
+    </div>
+    <div class="section">
+      <h2>📍 Ramani ya Bei za Soko</h2>
+      <div id="marketList"></div>
+      <button class="btn btn-green" style="width:100%;margin-top:14px" onclick="App.tumaBei()">📲 Tuma Bei Yako Sasa</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>✅ Bei Zilizothibitishwa</h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr><th>Bidhaa</th><th>Soko</th><th>Bei</th><th>Muuzaji</th><th>Tarehe</th><th>Status</th></tr>
+        </thead>
+        <tbody id="priceTableBody">
+          <tr><td colspan="6" style="text-align:center;color:var(--muted)">Inapakia...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="statusBar">Inapakia data kutoka Supabase...</div>
+  </div>
+</main>
+
+<!-- Admin Overlay -->
+<div class="overlay" id="adminOverlay" onclick="if(event.target===this)App.closeAdmin()">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>⚙️ Badili Data - Admin Panel</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-sm" id="adminLogoutBtn" style="background:#ef4444;color:#fff;display:none" onclick="App.logout()">Déconnexion</button>
+        <button class="panel-close" onclick="App.closeAdmin()">✕</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="general">🔧 General</button>
+      <button class="tab" data-tab="prices">🏷️ Bei & Bidhaa</button>
+      <button class="tab" data-tab="markets">📍 Masoko</button>
+    </div>
+
+    <div class="tab-body active" id="tab-general">
+      <div class="field"><label>Jina la Tovuti</label><input id="a_siteName"></div>
+      <div class="row2">
+        <div class="field"><label>WhatsApp (nambari tu)</label><input id="a_whatsapp" inputmode="numeric"></div>
+        <div class="field"><label>Sarafu</label><input id="a_currency"></div>
+      </div>
+      <div class="field"><label>Kichwa cha Kiwango cha Dola</label><input id="a_rateLabel"></div>
+      <div class="row2">
+        <div class="field"><label>Bei ya Kununua (Buy)</label><input id="a_rateBuy" type="number"></div>
+        <div class="field"><label>Bei ya Kuuza (Sell)</label><input id="a_rateSell" type="number"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Benki Kuu</label><input id="a_rateBank" type="number"></div>
+        <div class="field"><label>Avg Food Price Index</label><input id="a_foodIndex" type="number" step="0.1"></div>
+      </div>
+      <div class="field"><label>Mabadiliko ya Index (%)</label><input id="a_foodChange" type="number" step="0.1"></div>
+      <button class="btn-sm btn-green" onclick="App.saveGeneral()">💾 Hifadhi Mabadiliko</button>
+    </div>
+
+    <div class="tab-body" id="tab-prices">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Hariri bei. Kichupo ✔ = imethibitishwa.</p>
+      <div style="overflow-x:auto">
+        <table id="adminPriceTable">
+          <thead><tr><th>Bidhaa</th><th>Soko</th><th>Bei</th><th>Muuzaji</th><th>✔</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-sm" onclick="App.addPriceRow()">➕ Ongeza Bei Mpya</button>
+        <button class="btn-sm btn-green" onclick="App.savePrices()">💾 Hifadhi Bei Zote</button>
+      </div>
+    </div>
+
+    <div class="tab-body" id="tab-markets">
+      <div class="field">
+        <label>Orodha ya masoko (mstari mpya au comma)</label>
+        <textarea id="a_markets" rows="6"></textarea>
+      </div>
+      <button class="btn-sm btn-green" onclick="App.saveMarkets()">💾 Hifadhi Masoko</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="overlay" id="loginOverlay">
+  <div class="panel" style="max-width:400px">
+    <div class="panel-head">
+      <h2>🔐 Accès Administrateur</h2>
+      <button class="panel-close" onclick="App.closeLogin()">✕</button>
+    </div>
+    <div style="padding:20px">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Connectez-vous avec le compte admin Supabase.</p>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@email.com" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div id="loginError" style="color:#d32f2f;font-size:13px;margin:8px 0;display:none"></div>
+      <button class="btn-sm btn-green" style="width:100%;padding:12px;margin-top:8px" id="loginBtn" onclick="App.doLogin()">Se connecter</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+// ========== SUPABASE CONFIG ==========
+const SUPABASE_URL = "https://qtuxckhskjfdzborynqh.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_XUHgMFMu-fm6L032wy5wfA_Z6sLeTPV";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ========== STATE ==========
+let data = {
+  siteName: "SOKO.bi",
+  whatsapp: "25761000000",
+  currency: "FBu",
+  rateLabel: "USD / BIF Rate",
+  rate: {buy:2980, sell:2990, bank:2980},
+  foodIndex: {value:108.4, change:1.2},
+  markets: ["Marché Central","Kinindo","Rohero","Cotebu","Ruvumera","Kanyosha","Musaga"],
+  prices: []
+};
+let currentUser = null;
+let mainChart = null;
+
+// ========== UTILS ==========
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2800);
+}
+function fmt(n){ return Number(n).toLocaleString("fr-FR"); }
+
+// ========== LOAD DATA FROM SUPABASE ==========
+async function loadAll(){
+  document.getElementById("statusBar").textContent = "Inapakia data...";
+  try {
+    // Settings
+    const { data: settings, error: e1 } = await supabase.from("settings").select("*").eq("id",1).single();
+    if (e1) throw e1;
+    if (settings){
+      data.siteName = settings.site_name || data.siteName;
+      data.whatsapp = settings.whatsapp || data.whatsapp;
+      data.currency = settings.currency || data.currency;
+      data.rateLabel = settings.rate_label || data.rateLabel;
+      data.rate = {
+        buy: Number(settings.rate_buy)||2980,
+        sell: Number(settings.rate_sell)||2990,
+        bank: Number(settings.rate_bank)||2980
+      };
+      data.foodIndex = {
+        value: Number(settings.food_index)||108.4,
+        change: Number(settings.food_change)||1.2
+      };
+      data.markets = settings.markets || data.markets;
+    }
+
+    // Prices
+    const { data: prices, error: e2 } = await supabase.from("prices").select("*").order("id",{ascending:true});
+    if (e2) throw e2;
+    data.prices = (prices||[]).map(p=>({
+      id: p.id,
+      prod: p.product,
+      market: p.market,
+      price: Number(p.price),
+      seller: p.seller||"",
+      verified: !!p.verified,
+      date: (p.created_at||"").slice(0,10)
+    }));
+
+    renderAll();
+    document.getElementById("statusBar").textContent = "Imesahihishwa: " + data.prices.filter(p=>p.verified).length + " • Soko: " + data.markets.length + " • Data live (Supabase)";
+  } catch(err){
+    console.error(err);
+    document.getElementById("statusBar").textContent = "Hitilafu ya kupakia data: " + (err.message||err);
+    toast("Erreur de chargement des données");
+  }
+}
+
+// ========== RENDER ==========
+function renderAll(){
+  document.getElementById("rateLabel").textContent = data.rateLabel;
+  document.getElementById("rateBuy").textContent = fmt(data.rate.buy) + " BIF";
+  document.getElementById("rateSub").textContent = `Nunua ${fmt(data.rate.buy)} / Uza ${fmt(data.rate.sell)} • Benki Kuu ${fmt(data.rate.bank)}`;
+  document.getElementById("foodIndex").textContent = data.foodIndex.value;
+  const ch = data.foodIndex.change;
+  document.getElementById("foodChange").textContent = (ch>=0?"+":"") + ch + "% vs wiki iliyopita";
+  document.getElementById("marketsCount").textContent = data.markets.length + " Masoko";
+
+  // Market list (sample prices)
+  const ml = document.getElementById("marketList");
+  ml.innerHTML = "";
+  data.markets.forEach(m=>{
+    const p = data.prices.find(x=>x.market===m && x.verified) || data.prices.find(x=>x.market===m);
+    const div = document.createElement("div");
+    div.style.cssText = "display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--border)";
+    div.innerHTML = `<div><strong>${m}</strong><br><span style="font-size:12px;color:var(--muted)">${p?p.prod:"Hakuna bei"}</span></div>
+                     <div style="font-weight:700;color:var(--green)">${p?fmt(p.price)+" "+data.currency:"—"}</div>`;
+    ml.appendChild(div);
+  });
+
+  // Price table
+  const tb = document.getElementById("priceTableBody");
+  tb.innerHTML = "";
+  if (!data.prices.length){
+    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted)">Hakuna bei bado</td></tr>`;
+  } else {
+    data.prices.forEach(p=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${p.prod}</td><td>${p.market}</td><td><strong>${fmt(p.price)}</strong> ${data.currency}</td>
+                     <td>${p.seller||"—"}</td><td>${p.date||"—"}</td>
+                     <td><span class="badge ${p.verified?"badge-ok":"badge-wait"}">${p.verified?"Imethibitishwa":"Inasubiri"}</span></td>`;
+      tb.appendChild(tr);
+    });
+  }
+  renderChart();
+}
+
+function renderChart(){
+  const ctx = document.getElementById("mainChart");
+  if (mainChart) mainChart.destroy();
+  // Simple static chart for now (can be improved later with real history)
+  mainChart = new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:["Sep25","Sep28","Oct02","Oct07","Oct10","Oct14","Oct18","Oct22","Oct26","Oct30","Nov03"],
+      datasets:[
+        {label:"Dola (BIF)",data:[2950,2955,2960,2965,2970,2975,2980,2985,2985,2982,2980],borderColor:"#0b3d5d",tension:.3,pointRadius:3},
+        {label:"Mchele 1kg",data:[4700,4900,5100,5600,6200,6800,7500,8000,8300,8400,8500],borderColor:"#3b82f6",tension:.3,pointRadius:3},
+        {label:"Maharagwe 1kg",data:[3400,3450,3550,3700,4000,4300,4600,4800,5120,5200,5300],borderColor:"#64b5f6",tension:.3,pointRadius:3}
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:"bottom"}},scales:{y:{beginAtZero:false}}}
+  });
+}
+
+// ========== AUTH ==========
+async function checkSession(){
+  const { data: { session } } = await supabase.auth.getSession();
+  currentUser = session?.user || null;
+  updateAdminUI();
+}
+
+function updateAdminUI(){
+  const btn = document.getElementById("adminLogoutBtn");
+  if (currentUser){
+    btn.style.display = "inline-block";
+  } else {
+    btn.style.display = "none";
+  }
+}
+
+async function doLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const errEl = document.getElementById("loginError");
+  const btn = document.getElementById("loginBtn");
+  errEl.style.display = "none";
+  if (!email || !password){
+    errEl.textContent = "Email et mot de passe requis.";
+    errEl.style.display = "block";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Connexion...";
+  const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
+  btn.disabled = false;
+  btn.textContent = "Se connecter";
+  if (error){
+    errEl.textContent = error.message || "Identifiants incorrects";
+    errEl.style.display = "block";
+    return;
+  }
+  currentUser = authData.user;
+  closeLogin();
+  openAdminPanel();
+  toast("✅ Connecté en tant qu'administrateur");
+  updateAdminUI();
+}
+
+async function logout(){
+  await supabase.auth.signOut();
+  currentUser = null;
+  updateAdminUI();
+  closeAdmin();
+  toast("🔒 Déconnecté");
+}
+
+// ========== ADMIN PANEL ==========
+function openAdmin(){
+  if (currentUser){
+    openAdminPanel();
+  } else {
+    document.getElementById("loginOverlay").classList.add("open");
+    document.getElementById("loginEmail").value = "";
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("loginError").style.display = "none";
+  }
+}
+
+function closeLogin(){
+  document.getElementById("loginOverlay").classList.remove("open");
+}
+
+function openAdminPanel(){
+  document.getElementById("a_siteName").value = data.siteName;
+  document.getElementById("a_whatsapp").value = data.whatsapp;
+  document.getElementById("a_currency").value = data.currency;
+  document.getElementById("a_rateLabel").value = data.rateLabel;
+  document.getElementById("a_rateBuy").value = data.rate.buy;
+  document.getElementById("a_rateSell").value = data.rate.sell;
+  document.getElementById("a_rateBank").value = data.rate.bank;
+  document.getElementById("a_foodIndex").value = data.foodIndex.value;
+  document.getElementById("a_foodChange").value = data.foodIndex.change;
+  document.getElementById("a_markets").value = data.markets.join("\n");
+  buildAdminPriceRows();
+  document.getElementById("adminOverlay").classList.add("open");
+}
+
+function closeAdmin(){
+  document.getElementById("adminOverlay").classList.remove("open");
+}
+
+// Tabs
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".tab-body").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    document.getElementById("tab-"+t.dataset.tab).classList.add("active");
+  });
+});
+
+// ========== SAVE FUNCTIONS ==========
+async function saveGeneral(){
+  if (!currentUser){ toast("Session expirée"); return; }
+  const payload = {
+    site_name: document.getElementById("a_siteName").value.trim() || "SOKO.bi",
+    whatsapp: document.getElementById("a_whatsapp").value.replace(/\D/g,"") || "25761000000",
+    currency: document.getElementById("a_currency").value.trim() || "FBu",
+    rate_label: document.getElementById("a_rateLabel").value.trim() || "USD / BIF Rate",
+    rate_buy: parseFloat(document.getElementById("a_rateBuy").value) || 2980,
+    rate_sell: parseFloat(document.getElementById("a_rateSell").value) || 2990,
+    rate_bank: parseFloat(document.getElementById("a_rateBank").value) || 2980,
+    food_index: parseFloat(document.getElementById("a_foodIndex").value) || 108.4,
+    food_change: parseFloat(document.getElementById("a_foodChange").value) || 0,
+    updated_at: new Date().toISOString()
+  };
+  const { error } = await supabase.from("settings").update(payload).eq("id",1);
+  if (error){ toast("Erreur: "+error.message); return; }
+  Object.assign(data, {
+    siteName: payload.site_name,
+    whatsapp: payload.whatsapp,
+    currency: payload.currency,
+    rateLabel: payload.rate_label,
+    rate: {buy:payload.rate_buy, sell:payload.rate_sell, bank:payload.rate_bank},
+    foodIndex: {value:payload.food_index, change:payload.food_change}
+  });
+  renderAll();
+  toast("✅ Paramètres enregistrés pour tout le monde");
+}
+
+async function saveMarkets(){
+  if (!currentUser){ toast("Session expirée"); return; }
+  const raw = document.getElementById("a_markets").value;
+  const markets = raw.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  const { error } = await supabase.from("settings").update({ markets, updated_at: new Date().toISOString() }).eq("id",1);
+  if (error){ toast("Erreur: "+error.message); return; }
+  data.markets = markets;
+  renderAll();
+  toast("✅ Masoko yamehifadhiwa");
+}
+
+function buildAdminPriceRows(){
+  const tb = document.querySelector("#adminPriceTable tbody");
+  tb.innerHTML = "";
+  data.prices.forEach((p,i)=>{
+    const tr = document.createElement("tr");
+    tr.dataset.id = p.id || "";
+    tr.innerHTML = `
+      <td><input value="${p.prod||""}" style="width:110px"></td>
+      <td><input value="${p.market||""}" style="width:110px"></td>
+      <td><input type="number" value="${p.price||""}" style="width:90px"></td>
+      <td><input value="${p.seller||""}" style="width:90px"></td>
+      <td><input type="checkbox" ${p.verified?"checked":""}></td>
+      <td><button class="btn-sm" style="background:#fee2e2;color:#b91c1c" onclick="this.closest('tr').remove()">✕</button></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function addPriceRow(){
+  const tb = document.querySelector("#adminPriceTable tbody");
+  const tr = document.createElement("tr");
+  tr.dataset.id = "";
+  tr.innerHTML = `
+    <td><input placeholder="Bidhaa" style="width:110px"></td>
+    <td><input placeholder="Soko" style="width:110px"></td>
+    <td><input type="number" placeholder="Bei" style="width:90px"></td>
+    <td><input placeholder="Muuzaji" style="width:90px"></td>
+    <td><input type="checkbox"></td>
+    <td><button class="btn-sm" style="background:#fee2e2;color:#b91c1c" onclick="this.closest('tr').remove()">✕</button></td>`;
+  tb.appendChild(tr);
+}
+
+async function savePrices(){
+  if (!currentUser){ toast("Session expirée"); return; }
+  const rows = document.querySelectorAll("#adminPriceTable tbody tr");
+  const newPrices = [];
+  rows.forEach(tr=>{
+    const inputs = tr.querySelectorAll("input");
+    const prod = inputs[0].value.trim();
+    const market = inputs[1].value.trim();
+    const price = parseFloat(inputs[2].value);
+    const seller = inputs[3].value.trim();
+    const verified = inputs[4].checked;
+    if (prod && market && !isNaN(price)){
+      newPrices.push({
+        id: tr.dataset.id ? Number(tr.dataset.id) : null,
+        product: prod,
+        market,
+        price,
+        seller,
+        verified
+      });
+    }
+  });
+
+  // Simple strategy: delete all then insert (ok for small data)
+  const { error: delErr } = await supabase.from("prices").delete().neq("id", 0);
+  if (delErr){ toast("Erreur suppression: "+delErr.message); return; }
+
+  if (newPrices.length){
+    const toInsert = newPrices.map(p=>({
+      product: p.product,
+      market: p.market,
+      price: p.price,
+      seller: p.seller,
+      verified: p.verified
+    }));
+    const { error: insErr } = await supabase.from("prices").insert(toInsert);
+    if (insErr){ toast("Erreur insertion: "+insErr.message); return; }
+  }
+
+  await loadAll();
+  toast("✅ Bei zimehifadhiwa kwa watumiaji wote");
+  closeAdmin();
+}
+
+// ========== PUBLIC ACTIONS ==========
+function tumaBei(){
+  const text = encodeURIComponent("Habari, nataka kutuma bei ya soko:");
+  window.open(`https://wa.me/${data.whatsapp}?text=${text}`, "_blank");
+}
+function notif(){ toast("🔔 Notifications bado zinakuja"); }
+
+// ========== EXPOSE ==========
+window.App = {
+  openAdmin, closeAdmin, closeLogin, doLogin, logout,
+  saveGeneral, saveMarkets, savePrices, addPriceRow,
+  tumaBei, notif, install:()=>{}
+};
+
+// ========== INIT ==========
+checkSession().then(loadAll);
+
+// Listen auth changes
+supabase.auth.onAuthStateChange((event, session)=>{
+  currentUser = session?.user || null;
+  updateAdminUI();
+});
+
+})();
+</script>
+</body>
+</html>
