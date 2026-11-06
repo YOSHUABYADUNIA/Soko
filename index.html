@@ -219,7 +219,45 @@ footer b{color:var(--green)}
 <
 <script>
 (function(){
-"use strict";
+"use strict";// Chargement automatique des données depuis donnees.json
+let DONNEES_SITE = null;
+
+async function chargerDonneesJSON() {
+  try {
+    const reponse = await fetch('donnees.json?v=' + Date.now());
+    DONNEES_SITE = await reponse.json();
+    appliquerDonneesSite();
+  } catch (e) {
+    console.log("Utilisation des données par défaut");
+  }
+}
+
+function appliquerDonneesSite() {
+  if (!DONNEES_SITE) return;
+  
+  // Mettre à jour les données dans la mémoire de l'application
+  data.rate.buy = DONNEES_SITE.tauxAchat;
+  data.rate.sell = DONNEES_SITE.tauxVente;
+  data.rate.bank = DONNEES_SITE.tauxUsd;
+  data.foodIndex.value = DONNEES_SITE.indiceValeur;
+  data.foodIndex.change = DONNEES_SITE.indiceVariation;
+  data.markets = DONNEES_SITE.marches;
+  data.prices = DONNEES_SITE.prix.map(p => ({
+    id: Date.now() + Math.random(),
+    prod: p.produit,
+    market: p.marche,
+    price: p.prix,
+    seller: p.vendeur,
+    verified: p.verifie,
+    date: p.date
+  }));
+  data.lastUpdate = DONNEES_SITE.derniereMiseAJour;
+  
+  // Rafraîchir l'affichage
+ // D'abord charger les données du fichier JSON, puis afficher
+chargerDonneesJSON().then(() => { renderAll();
+});
+})();
 var KEY="sokobi_v1";
 var DEFAULTS={
   siteName:"SOKO.bi",
