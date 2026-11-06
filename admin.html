@@ -194,7 +194,7 @@ const MOT_DE_PASSE = "GraJosh";
 
 let donnees = {};
 
-function aujourd'hui() {
+function aujourdHui() {
     return new Date().toISOString().split('T')[0];
 }
 
@@ -208,14 +208,14 @@ const DONNEES_DEFAUT = {
   indiceValeur: 108.4,
   indiceVariation: 1.2,
   prix: [
-    { marche: "Marché Central", produit: "Mchele 1kg", prix: 4800, vendeur: "Jean", verifie: true, date: aujourd'hui() },
-    { marche: "Ruvumera", produit: "Maharagwe 1kg", prix: 3500, vendeur: "Mama Aisha", verifie: true, date: aujourd'hui() },
-    { marche: "Kinindo", produit: "Mafuta 1L", prix: 5800, vendeur: "Salongo", verifie: true, date: aujourd'hui() },
-    { marche: "Cotebu", produit: "Ugali 2kg", prix: 3200, vendeur: "Duclair", verifie: true, date: aujourd'hui() },
-    { marche: "Rohero", produit: "Sukari 1kg", prix: 2700, vendeur: "Shop Ubumwe", verifie: false, date: aujourd'hui() }
+    { marche: "Marché Central", produit: "Mchele 1kg", prix: 4800, vendeur: "Jean", verifie: true, date: aujourdHui() },
+    { marche: "Ruvumera", produit: "Maharagwe 1kg", prix: 3500, vendeur: "Mama Aisha", verifie: true, date: aujourdHui() },
+    { marche: "Kinindo", produit: "Mafuta 1L", prix: 5800, vendeur: "Salongo", verifie: true, date: aujourdHui() },
+    { marche: "Cotebu", produit: "Ugali 2kg", prix: 3200, vendeur: "Duclair", verifie: true, date: aujourdHui() },
+    { marche: "Rohero", produit: "Sukari 1kg", prix: 2700, vendeur: "Shop Ubumwe", verifie: false, date: aujourdHui() }
   ],
   marches: ["Marché Central", "Kinindo", "Rohero", "Cotebu", "Ruvumera", "Kanyosha", "Musaga"],
-  derniereMiseAJour: aujourd'hui()
+  derniereMiseAJour: aujourdHui()
 };
 
 // Connexion
@@ -321,7 +321,7 @@ function ajouterProduit() {
         prix: 0,
         vendeur: "",
         verifie: false,
-        date: aujourd'hui()
+        date: aujourdHui()
     });
     rendreListePrix();
     genererJSON();
@@ -337,7 +337,6 @@ function supprimerProduit(index) {
 
 function genererJSON() {
     // Récupérer les valeurs
-    donne
     donnees.tauxUsd = parseInt(document.getElementById('tauxUsd').value) || 0;
     donnees.tauxAchat = parseInt(document.getElementById('tauxAchat').value) || 0;
     donnees.tauxVente = parseInt(document.getElementById('tauxVente').value) || 0;
@@ -352,7 +351,7 @@ function genererJSON() {
         .map(m => m.trim())
         .filter(m => m.length > 0);
     
-    donnees.derniereMiseAJour = aujourd'hui();
+    donnees.derniereMiseAJour = aujourdHui();
     
     localStorage.setItem('soko_admin_donnees', JSON.stringify(donnees));
     
